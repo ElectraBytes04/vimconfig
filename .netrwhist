@@ -1,0 +1,12 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =0
+let g:netrw_dirhist_0='/home/colin'
+let g:netrw_dirhist_9='/home/colin/.vim/plugged'
+let g:netrw_dirhist_8='/home/colin/.vim'
+let g:netrw_dirhist_7='/home/colin'
+let g:netrw_dirhist_6='/home/colin/Programs/General/Rust/rustlings/exercises/04_primitive_types'
+let g:netrw_dirhist_5='/home/colin/Programs/General/Rust/rustlings/exercises'
+let g:netrw_dirhist_4='/home/colin/Programs/General/Rust/rustlings/exercises/04_primitive_types'
+let g:netrw_dirhist_3='/home/colin/Programs/General/Rust/rustlings/exercises'
+let g:netrw_dirhist_2='/home/colin/Programs/General/Rust/rustlings/exercises/04_primitive_types'
+let g:netrw_dirhist_1='/home/colin/Programs/General/Rust/rustlings/exercises'
