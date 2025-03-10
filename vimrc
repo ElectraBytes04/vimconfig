@@ -35,6 +35,7 @@ Plug 'godlygeek/tabular'
 Plug 'preservim/vim-markdown'
 
 Plug 'lervag/wiki.vim'
+Plug 'm-pilia/vim-mediawiki'
 
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
@@ -102,6 +103,7 @@ endfunction
 function! CloseCenterLayout()
 	only
 	set statusline=%!MyStatusLine
+	set colorcolumn=80,100,120
 endfunction
 
 command! SCenterLayout :call SetupCenterLayout()
