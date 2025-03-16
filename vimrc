@@ -84,7 +84,7 @@ let g:ale_set_signs = 0
 
 highlight ALEError   guifg=#E27878 guibg=NONE gui=underline cterm=underline
 highlight ALEWarning guifg=#ECCC96 guibg=NONE gui=underline cterm=underline
-highlight ALEInfo    guifg=#84A0C6 guibg=NONE gui=underline cterm=underline
+highlight ALEInfo    guifg=#84A0C6 guibg=NONE gui=underline cterm=underline 
 highlight ALEHint    guifg=#A1EFD3 guibg=NONE gui=underline cterm=underline
 
 " Spell
@@ -141,13 +141,14 @@ command! CCenterLayout :call CloseCenterLayout()
 " Base code by subhadip, adapted by me
 function! MarkdownView()
 	execute "silent !" . "pandoc " . "%:p" . " -o " . "%:p" . ".html"
-	execute "silent !" . "python -m webbrowser " . "%:p" . ".html"
+	execute "silent !" . "python3 -m webbrowser " . "%:p" . ".html"
 	call getchar()
 	if has('win32')
 		execute "silent !" . "del " . "%:p" . ".html"
 	else
 		execute "silent !" . "rm " . "%:p" . ".html"
 	endif
+	execute "redraw!"
 endfunction
 
 nnoremap <localleader>v :call MarkdownView()<cr>
