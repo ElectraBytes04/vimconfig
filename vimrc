@@ -1,22 +1,93 @@
+"     |||||         |||||  |   |				 |   | ||||| || || ||||  |||||
+"    |             |   |  |   |					 |   |   |   | | | |   | |
+"   ||||   |||||  |   |  |||||					 |   |   |   |   | ||||  |
+"  |             |   |      |					  | |    |   |   | |   | |
+" |||||         |||||      |					   |   ||||| |   | |   | |||||
+
+" |-------------------------------============-------------------------------|
+" |                               Vim Settings                               |
+" |-------------------------------============-------------------------------|
+
+
 set nocompatible
+
+syntax enable
+silent! set filetype plugin indent on
 
 set termguicolors
 colorscheme iceberg
 
-set showtabline=0
+" --- Editor Settings ---
 set number
 set relativenumber
+set showtabline=0
 set colorcolumn=80,100,120
 set nofoldenable
 
+set mouse=
+
+" --- Text Settings ---
 set wrap
 set textwidth=80
+set tabstop=4 
+set shiftwidth=4
 
-syntax enable
-filetype plugin on
-set tabstop=4 shiftwidth=4
 
-set mouse=
+" |---------------------------------=======----------------------------------|
+" |                                 Plugins                                  |
+" |---------------------------------=======----------------------------------|
+
+
+" --- Plugin Installs ---
+call plug#begin()
+
+Plug 'tribela/vim-transparent'
+
+Plug 'tpope/vim-fugitive'
+
+Plug 'dense-analysis/ale'
+
+Plug 'rust-lang/rust.vim'
+
+Plug 'godlygeek/tabular'
+Plug 'preservim/vim-markdown'
+
+Plug 'lervag/wiki.vim'
+Plug 'm-pilia/vim-mediawiki'
+
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+
+call plug#end()
+
+
+" /-/-/ Plugin Configs \-\-\
+
+" --- Wiki.vim ---
+let g:wiki_root = "~/wiki"
+let g:wiki_filetypes = ['wiki']
+
+" --- ALE ---
+let g:ale_linters = {'rust': ['analyzer'], 'python': ['flake8']}
+
+let g:ale_set_signs = 0
+
+highlight ALEError   guifg=#E27878 guibg=NONE gui=underline cterm=underline
+highlight ALEWarning guifg=#ECCC96 guibg=NONE gui=underline cterm=underline
+highlight ALEInfo    guifg=#84A0C6 guibg=NONE gui=underline cterm=underline
+highlight ALEHint    guifg=#A1EFD3 guibg=NONE gui=underline cterm=underline
+
+" --- Spell ---
+hi! link SpellBad   ALEError
+hi! link SpellCap   ALEWarning
+hi! link SpellRare  ALEInfo
+hi! link SpellLocal ALEHint
+
+
+" |--------------------------------==========--------------------------------|
+" |                                Statusline                                |
+" |--------------------------------==========--------------------------------|
+
 
 function! LinterStatus() abort
 	let l:counts = ale#statusline#Count(bufnr(''))
@@ -49,52 +120,13 @@ let MyStatusLine=' %f %#Folded# %y%m %#SpecialKey#
 set laststatus=2
 set statusline=%!MyStatusLine
 
-" Plugins
 
-call plug#begin()
+" |-------------------------------============-------------------------------|
+" |                               AutoCommands                               |
+" |-------------------------------============-------------------------------|
 
-Plug 'tribela/vim-transparent'
 
-Plug 'tpope/vim-fugitive'
-
-Plug 'dense-analysis/ale'
-
-Plug 'rust-lang/rust.vim'
-
-Plug 'godlygeek/tabular'
-Plug 'preservim/vim-markdown'
-
-Plug 'lervag/wiki.vim'
-Plug 'm-pilia/vim-mediawiki'
-
-Plug 'junegunn/fzf'
-Plug 'junegunn/fzf.vim'
-
-call plug#end()
-
-" Wiki.vim
-let g:wiki_root = "~/wiki"
-let g:wiki_filetypes = ['wiki']
-
-" ALE
-
-let g:ale_linters = {'rust': ['analyzer'], 'python': ['flake8']}
-
-let g:ale_set_signs = 0
-
-highlight ALEError   guifg=#E27878 guibg=NONE gui=underline cterm=underline
-highlight ALEWarning guifg=#ECCC96 guibg=NONE gui=underline cterm=underline
-highlight ALEInfo    guifg=#84A0C6 guibg=NONE gui=underline cterm=underline 
-highlight ALEHint    guifg=#A1EFD3 guibg=NONE gui=underline cterm=underline
-
-" Spell
-
-hi! link SpellBad   ALEError
-hi! link SpellCap   ALEWarning
-hi! link SpellRare  ALEInfo
-hi! link SpellLocal ALEHint
-
-" augroups
+" /-/-/ FileType Rules \-\-\
 
  augroup WikiMarkdown
  	autocmd Filetype mediawiki,markdown set wrap
@@ -105,30 +137,50 @@ hi! link SpellLocal ALEHint
  	autocmd Filetype mediawiki,markdown highlight conceal guibg=NONE
  	autocmd Filetype mediawiki,markdown let g:vim_markdown_folding_disabled=1
  	autocmd Filetype mediawiki,markdown let g:vim_markdown_math=1
- 	autocmd Filetype mediawiki,markdown let g:vim_markdown_conceal=1            
+ 	autocmd Filetype mediawiki,markdown let g:vim_markdown_conceal=1
  augroup END
 
-" Custom functions
 
-" Create 3 40 column margins on either side
+" |------------------------------===============-----------------------------|
+" |                              CustomFunctions                             |
+" |-------------------------- ---===============-----------------------------|
+
+
 function! SetupCenterLayout()
-	vsp
-	vertical resize 44
+	" Center window content, creating two margins on either side. The center
+	" width is locked to 85 columns (accounting for textoff) and the margins are
+	" set to the size of the remaining space / 2.
+
+	let l:win_info = getwininfo(win_getid())
+	let l:win_width = l:win_info[0]['width']
+	let l:total_margin = max([l:win_width - 85, 0])
+	let l:margin_single = (l:total_margin / 2)
+
+	let l:margin_single = float2nr(l:margin_single)
+
+	execute "vsp"
+	execute "vertical resize " . l:margin_single
 	enew
+	setlocal winfixwidth
 	setlocal statusline=%#SpecialKey#-%=-
+
 	wincmd l
-	vsp
+
+	execute "vsp"
 	wincmd l
-	vertical resize 44
+	execute "vertical resize " . l:margin_single
 	enew
+	setlocal winfixwidth
 	setlocal statusline=%#SpecialKey#-%=-
+
 	wincmd h
+
 	setlocal colorcolumn=80
 	setlocal statusline=%!MyStatusLine
 endfunction
 
-" Close margins
 function! CloseCenterLayout()
+	" Close margins created by StartCenterLayout().
 	only
 	set statusline=%!MyStatusLine
 	set colorcolumn=80,100,120
@@ -137,9 +189,9 @@ endfunction
 command! SCenterLayout :call SetupCenterLayout()
 command! CCenterLayout :call CloseCenterLayout()
 
-" View markdown files as HTML on browser
-" Base code by subhadip, adapted by me
 function! MarkdownView()
+	" View files as HTML on browser.
+	" Base code by subhadip, adapted by me.
 	execute "silent !" . "pandoc " . "%:p" . " -o " . "%:p" . ".html"
 	execute "silent !" . "python3 -m webbrowser " . "%:p" . ".html"
 	call getchar()
