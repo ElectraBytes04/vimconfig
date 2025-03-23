@@ -20,6 +20,7 @@ colorscheme iceberg
 " --- Editor Settings ---
 set number
 set relativenumber
+set showcmd
 set showtabline=0
 set colorcolumn=80,100,120
 set nofoldenable
@@ -143,7 +144,7 @@ set statusline=%!MyStatusLine
 
 " |------------------------------===============-----------------------------|
 " |                              CustomFunctions                             |
-" |-------------------------- ---===============-----------------------------|
+" |------------------------------===============-----------------------------|
 
 
 function! SetupCenterLayout()
@@ -186,10 +187,7 @@ function! CloseCenterLayout()
 	set colorcolumn=80,100,120
 endfunction
 
-command! SCenterLayout :call SetupCenterLayout()
-command! CCenterLayout :call CloseCenterLayout()
-
-function! MarkdownView()
+function! BrowserView()
 	" View files as HTML on browser.
 	" Base code by subhadip, adapted by me.
 	execute "silent !" . "pandoc " . "%:p" . " -o " . "%:p" . ".html"
@@ -203,4 +201,14 @@ function! MarkdownView()
 	execute "redraw!"
 endfunction
 
-nnoremap <localleader>v :call MarkdownView()<cr>
+
+" |----------------------------------======----------------------------------|
+" |                                  Remaps                                  |
+" |----------------------------------======----------------------------------|
+
+
+nnoremap <localleader>v :call BrowserView()<cr>
+nnoremap <localleader>fz :FZF<cr>
+
+command! SCenterLayout :call SetupCenterLayout()
+command! CCenterLayout :call CloseCenterLayout()
