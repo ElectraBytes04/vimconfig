@@ -66,7 +66,7 @@ call plug#end()
 
 " --- Wiki.vim ---
 let g:wiki_root = "~/wiki"
-let g:wiki_filetypes = ['wiki']
+let g:wiki_filetypes = ['wiki', 'wikt']
 
 " --- ALE ---
 let g:ale_linters = {'rust': ['analyzer'], 'python': ['flake8']}
@@ -129,17 +129,19 @@ set statusline=%!MyStatusLine
 
 " /-/-/ FileType Rules \-\-\
 
- augroup WikiMarkdown
- 	autocmd Filetype mediawiki,markdown set wrap
+autocmd BufNew,BufNewFile,BufRead *.wikt setlocal filetype=mediawiki
+
+augroup WikiMarkdown
+   	autocmd Filetype mediawiki,markdown set wrap
 	autocmd Filetype mediawiki,markdown set linebreak
  	autocmd Filetype mediawiki,markdown set textwidth=80
  	autocmd Filetype mediawiki,markdown set formatoptions+=t
  	autocmd Filetype mediawiki,markdown set conceallevel=2
  	autocmd Filetype mediawiki,markdown highlight conceal guibg=NONE
- 	autocmd Filetype mediawiki,markdown let g:vim_markdown_folding_disabled=1
+	autocmd Filetype mediawiki,markdown let g:vim_markdown_folding_disabled=1
  	autocmd Filetype mediawiki,markdown let g:vim_markdown_math=1
  	autocmd Filetype mediawiki,markdown let g:vim_markdown_conceal=1
- augroup END
+augroup END
 
 
 " |------------------------------===============-----------------------------|
@@ -191,7 +193,7 @@ function! BrowserView()
 	" View files as HTML on browser.
 	" Base code by subhadip, adapted by me.
 	execute "silent !" . "pandoc " . "%:p" . " -o " . "%:p" . ".html"
-	execute "silent !" . "python3 -m webbrowser " . "%:p" . ".html"
+	execute "silent !" . "python3 -m webbrowser -t " . "%:p" . ".html"
 	call getchar()
 	if has('win32')
 		execute "silent !" . "del " . "%:p" . ".html"
@@ -201,14 +203,37 @@ function! BrowserView()
 	execute "redraw!"
 endfunction
 
+function! CopyFileContents(source_file_path)
+	" Copy entire contents of the source_file_path to current open file.
+	let l:source_file_path = expand(a:source_file_path)
+
+	echo l:source_file_path
+	execute "r! cat " . l:source_file_path
+	execute "1delete"
+endfunction
+
 
 " |----------------------------------======----------------------------------|
 " |                                  Remaps                                  |
 " |----------------------------------======----------------------------------|
 
 
+" --- Normal Vim ---
 nnoremap <localleader>v :call BrowserView()<cr>
-nnoremap <localleader>fz :FZF<cr>
+
+
+" /-/-/ Plugins \-\-\
+
+" --- FZF ---
+nnoremap <localleader>fz :FZF<cr> 
+
+" --- Wiki.vim ---
+nnoremap <localleader>wb :WikiLinkReturn<cr>
+
+
+" /-/-/ Commands \-\-\
 
 command! SCenterLayout :call SetupCenterLayout()
 command! CCenterLayout :call CloseCenterLayout()
+
+command! -nargs=+ CopyFileContents :silent! call CopyFileContents(<f-args>)
